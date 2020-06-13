@@ -59,7 +59,7 @@ class StoryProgressView : View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val actualWidth = MeasureSpec.getSize(widthMeasureSpec)
-        val actualHeight = MeasureSpec.getSize(widthMeasureSpec)
+        val actualHeight = MeasureSpec.getSize(heightMeasureSpec)
         calculateBounds(actualWidth, actualHeight)
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
