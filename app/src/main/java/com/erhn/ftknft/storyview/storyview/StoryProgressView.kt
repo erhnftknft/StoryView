@@ -52,7 +52,7 @@ class StoryProgressView : View, IStoryProgressView {
         super.onAttachedToWindow()
         mainAnimator.addUpdateListener {
             currentAnimateValue = it.animatedValue as Float
-            frontBounds.right  = currentAnimateValue * backBounds.width()
+            frontBounds.right = currentAnimateValue * backBounds.width()
             invalidate()
         }
     }
