@@ -5,13 +5,13 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.erhn.ftknft.storyview.RoundRectF
+import java.util.concurrent.TimeUnit
 
-class StoryProgressView : View {
+class StoryProgressView : View, IStoryProgressView {
     //dpUtil
     val oneDp: Int
 
@@ -34,7 +34,6 @@ class StoryProgressView : View {
 
     //animator
     private val mainAnimator = ValueAnimator.ofFloat(START_ANIM_VALUE, END_ANIM_VALUE)
-
     private var animDuration: Long = 5000L
 
     constructor(context: Context?) : super(context) {
@@ -53,6 +52,7 @@ class StoryProgressView : View {
         super.onAttachedToWindow()
         mainAnimator.addUpdateListener {
             currentAnimateValue = it.animatedValue as Float
+            frontBounds.right  = currentAnimateValue * backBounds.width()
             invalidate()
         }
     }
@@ -74,6 +74,42 @@ class StoryProgressView : View {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mainAnimator.removeAllUpdateListeners()
+    }
+
+
+    override fun setFrontColor(color: Int) {
+        frontColor = color
+    }
+
+    override fun setBackColor(color: Int) {
+        backColor = color
+    }
+
+    override fun setDuration(duration: Long, timeUnit: TimeUnit) {
+        animDuration = timeUnit.toMillis(duration)
+        cancel()
+        initialize()
+        invalidate()
+    }
+
+    override fun currentProgress(): Int {
+        return Math.round(currentAnimateValue * 100)
+    }
+
+    override fun start() {
+        mainAnimator.start()
+    }
+
+    override fun cancel() {
+        mainAnimator.cancel()
+    }
+
+    override fun pause() {
+        mainAnimator.pause()
+    }
+
+    override fun resume() {
+        mainAnimator.resume()
     }
 
     private fun initialize() {

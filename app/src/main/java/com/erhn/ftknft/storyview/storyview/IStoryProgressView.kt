@@ -1,6 +1,8 @@
 package com.erhn.ftknft.storyview.storyview
 
+import android.animation.Animator
 import androidx.annotation.ColorInt
+import java.util.concurrent.TimeUnit
 
 interface IStoryProgressView {
 
@@ -8,14 +10,18 @@ interface IStoryProgressView {
 
     fun setBackColor(@ColorInt color: Int)
 
+    fun setDuration(duration: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS)
+
+
     fun currentProgress(): Int
 
     fun start()
 
-    fun stop()
+    fun cancel()
 
     fun pause()
 
     fun resume()
+
 
 }
