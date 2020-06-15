@@ -12,8 +12,11 @@ interface IStoryProgressView {
 
     fun setDuration(duration: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS)
 
-
     fun currentProgress(): Int
+
+    fun doOnCancel(action: (view: IStoryProgressView) -> Unit)
+
+    fun doOnStart(action: (view: IStoryProgressView) -> Unit)
 
     fun start()
 

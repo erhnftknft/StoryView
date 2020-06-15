@@ -5,20 +5,22 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
+import androidx.annotation.ColorInt
 import com.erhn.ftknft.storyview.RoundRectF
 import java.util.concurrent.TimeUnit
 
+
 class StoryProgressView : View, IStoryProgressView {
-    //dpUtil
-    val oneDp: Int
-
-
     //colors
+    @ColorInt
     private var backColor: Int = Color.DKGRAY
 
+    @ColorInt
     private var frontColor: Int = Color.WHITE
 
     //paint
@@ -36,16 +38,16 @@ class StoryProgressView : View, IStoryProgressView {
     private val mainAnimator = ValueAnimator.ofFloat(START_ANIM_VALUE, END_ANIM_VALUE)
     private var animDuration: Long = 5000L
 
+    // animator callbacks
+    private var onStart: ((view: IStoryProgressView) -> Unit)? = null
+    private var onCancel: ((view: IStoryProgressView) -> Unit)? = null
+
     constructor(context: Context?) : super(context) {
         initialize()
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         initialize()
-    }
-
-    init {
-        oneDp = 1.dp
     }
 
     override fun onAttachedToWindow() {
@@ -92,15 +94,25 @@ class StoryProgressView : View, IStoryProgressView {
         invalidate()
     }
 
+    override fun doOnStart(action: (view: IStoryProgressView) -> Unit) {
+        onStart = action
+    }
+
+    override fun doOnCancel(action: (view: IStoryProgressView) -> Unit) {
+        onCancel = action
+    }
+
     override fun currentProgress(): Int {
         return Math.round(currentAnimateValue * 100)
     }
 
     override fun start() {
+        onStart?.invoke(this)
         mainAnimator.start()
     }
 
     override fun cancel() {
+        onStart?.invoke(this)
         mainAnimator.cancel()
     }
 
@@ -144,10 +156,5 @@ class StoryProgressView : View, IStoryProgressView {
     companion object {
         private const val START_ANIM_VALUE = 0f
         private const val END_ANIM_VALUE = 1f
-
-        // private const val DEFAULT_HEIGHT =
     }
-
-    private val Int.dp: Int
-        get() = Math.round(context.resources.displayMetrics.density * this)
 }
