@@ -18,6 +18,8 @@ interface IStoryProgressView {
 
     fun doOnStart(action: (view: IStoryProgressView) -> Unit)
 
+    fun doOnEnd(action: (view: IStoryProgressView) -> Unit)
+
     fun start()
 
     fun cancel()

@@ -11,6 +11,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
+import androidx.core.animation.doOnCancel
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import com.erhn.ftknft.storyview.RoundRectF
 import java.util.concurrent.TimeUnit
 
@@ -41,6 +44,7 @@ class StoryProgressView : View, IStoryProgressView {
     // animator callbacks
     private var onStart: ((view: IStoryProgressView) -> Unit)? = null
     private var onCancel: ((view: IStoryProgressView) -> Unit)? = null
+    private var onEnd: ((view: IStoryProgressView) -> Unit)? = null
 
     constructor(context: Context?) : super(context) {
         initialize()
@@ -75,6 +79,7 @@ class StoryProgressView : View, IStoryProgressView {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        cancel()
         mainAnimator.removeAllUpdateListeners()
     }
 
@@ -96,10 +101,17 @@ class StoryProgressView : View, IStoryProgressView {
 
     override fun doOnStart(action: (view: IStoryProgressView) -> Unit) {
         onStart = action
+        mainAnimator.doOnStart { onStart?.invoke(this) }
+    }
+
+    override fun doOnEnd(action: (view: IStoryProgressView) -> Unit) {
+        onEnd = action
+        mainAnimator.doOnEnd { onEnd?.invoke(this) }
     }
 
     override fun doOnCancel(action: (view: IStoryProgressView) -> Unit) {
         onCancel = action
+        mainAnimator.doOnCancel { onCancel?.invoke(this) }
     }
 
     override fun currentProgress(): Int {
@@ -107,12 +119,10 @@ class StoryProgressView : View, IStoryProgressView {
     }
 
     override fun start() {
-        onStart?.invoke(this)
         mainAnimator.start()
     }
 
     override fun cancel() {
-        onStart?.invoke(this)
         mainAnimator.cancel()
     }
 
