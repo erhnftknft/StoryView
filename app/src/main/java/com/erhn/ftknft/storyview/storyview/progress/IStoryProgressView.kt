@@ -1,6 +1,5 @@
-package com.erhn.ftknft.storyview.storyview
+package com.erhn.ftknft.storyview.storyview.progress
 
-import android.animation.Animator
 import androidx.annotation.ColorInt
 import java.util.concurrent.TimeUnit
 

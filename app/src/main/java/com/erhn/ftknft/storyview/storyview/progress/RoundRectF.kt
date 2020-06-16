@@ -1,4 +1,4 @@
-package com.erhn.ftknft.storyview
+package com.erhn.ftknft.storyview.storyview.progress
 
 import android.graphics.RectF
 

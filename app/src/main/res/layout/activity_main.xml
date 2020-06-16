@@ -6,12 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.erhn.ftknft.storyview.storyview.StoryProgressView
+ <!--   <com.erhn.ftknft.storyview.storyview.progress.StoryProgressView
         android:id="@+id/spv"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:layout_gravity="center"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp" />
+        android:visibility="gone"
+        android:layout_marginEnd="20dp" />-->
+
+    <com.erhn.ftknft.storyview.storyview.StoryView
+        android:id="@+id/sv"
+        app:paddingBetweenProgress="20dp"
+        app:paddingEndProgress="20dp"
+        app:paddingStartProgress="20dp"
+        app:paddingTopProgress="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
 </FrameLayout>

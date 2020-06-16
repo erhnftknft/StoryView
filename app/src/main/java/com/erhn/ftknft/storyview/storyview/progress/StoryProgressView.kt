@@ -1,12 +1,10 @@
-package com.erhn.ftknft.storyview.storyview
+package com.erhn.ftknft.storyview.storyview.progress
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -14,11 +12,11 @@ import androidx.annotation.ColorInt
 import androidx.core.animation.doOnCancel
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import com.erhn.ftknft.storyview.RoundRectF
 import java.util.concurrent.TimeUnit
 
 
-class StoryProgressView : View, IStoryProgressView {
+class StoryProgressView : View,
+    IStoryProgressView {
     //colors
     @ColorInt
     private var backColor: Int = Color.DKGRAY
@@ -30,16 +28,21 @@ class StoryProgressView : View, IStoryProgressView {
     private var paint: Paint = Paint()
 
     //bounds
-    private val backBounds: RoundRectF = RoundRectF()
+    private val backBounds: RoundRectF =
+        RoundRectF()
 
-    private val frontBounds: RoundRectF = RoundRectF()
+    private val frontBounds: RoundRectF =
+        RoundRectF()
 
     //animateValue
     private var currentAnimateValue = 0f
 
     //animator
-    private val mainAnimator = ValueAnimator.ofFloat(START_ANIM_VALUE, END_ANIM_VALUE)
-    private var animDuration: Long = 5000L
+    private val mainAnimator = ValueAnimator.ofFloat(
+        START_ANIM_VALUE,
+        END_ANIM_VALUE
+    )
+    private var animDuration: Long = 10000L
 
     // animator callbacks
     private var onStart: ((view: IStoryProgressView) -> Unit)? = null
@@ -58,6 +61,11 @@ class StoryProgressView : View, IStoryProgressView {
         super.onAttachedToWindow()
         mainAnimator.addUpdateListener {
             currentAnimateValue = it.animatedValue as Float
+            frontBounds.right = currentAnimateValue * backBounds.width()
+            invalidate()
+        }
+        mainAnimator.doOnCancel {
+            currentAnimateValue = 0f
             frontBounds.right = currentAnimateValue * backBounds.width()
             invalidate()
         }
