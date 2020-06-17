@@ -113,7 +113,6 @@ class StoryView : ViewGroup, IStoryView {
             isLongPressed = false
             onLongPress?.invoke(IStoryView.LongPressAction.UP)
         }
-        Log.d("TOUCH_EVENT", "${event.action}")
         return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
     }
 

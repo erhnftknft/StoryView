@@ -46,7 +46,6 @@ class StoryFragment : Fragment() {
         sv.setSnapAdapter(snapAdapter)
         sv.start()
         sv.onEnd {
-            Log.d("END", "${hashCode()}")
             (parentFragment as StoriesFragment).next()
         }
 
