@@ -6,9 +6,10 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgSnap"
+        android:layout_width="300dp"
+        android:adjustViewBounds="true"
+        android:layout_height="300dp"
         android:background="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:scaleType="centerCrop"
-        android:layout_height="wrap_content"/>
+        android:scaleType="centerCrop" />
 
 </FrameLayout>

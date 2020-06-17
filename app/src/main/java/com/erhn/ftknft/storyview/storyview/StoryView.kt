@@ -3,14 +3,13 @@ package com.erhn.ftknft.storyview.storyview
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
 import com.erhn.ftknft.storyview.R
-import com.erhn.ftknft.storyview.storyview.adapter.SimpleAdapter
 import com.erhn.ftknft.storyview.storyview.adapter.SnapAdapter
 import com.erhn.ftknft.storyview.storyview.progress.StoryProgressView
+import java.util.concurrent.TimeUnit
 
 class StoryView : ViewGroup, IStoryView {
     private var currentPlayed = 0
@@ -41,7 +40,7 @@ class StoryView : ViewGroup, IStoryView {
     private val snapViews = ArrayList<View>()
     private var onEndAction: (() -> Unit)? = null
 
-    var adapter: SnapAdapter = SimpleAdapter()
+    var adapter: SnapAdapter = SnapAdapter.Builder().build()
 
     constructor(context: Context) : super(context) {
         initialize(context)
@@ -102,7 +101,6 @@ class StoryView : ViewGroup, IStoryView {
     }
 
 
-
     override fun start() {
         for (i in 0 until progressViews.size) {
             progressViews[i].cancel()
@@ -120,6 +118,15 @@ class StoryView : ViewGroup, IStoryView {
     override fun resume() {
         if (progressViews.isEmpty()) return
         progressViews[currentPlayed].resume()
+    }
+
+    override fun cancel() {
+        for (snapView in snapViews) {
+            snapView.visibility = View.INVISIBLE
+        }
+        for (progressView in progressViews) {
+            progressView.clearProgress()
+        }
     }
 
     override fun onEnd(action: () -> Unit) {
@@ -143,13 +150,16 @@ class StoryView : ViewGroup, IStoryView {
             addView(snapView)
         }
         for (i in 0 until itemSize) {
-            val progressView =
-                StoryProgressView(
-                    context
-                )
+            val progressView = StoryProgressView(context)
             progressView.setBackColor(backColor)
             progressView.setFrontColor(frontColor)
-            progressView.doOnEnd {
+            progressView.setDuration(3, TimeUnit.SECONDS)
+            progressViews.add(progressView)
+            addView(progressView)
+        }
+
+        for (i in 0 until progressViews.size) {
+            progressViews[i].doOnEnd {
                 if (i < progressViews.lastIndex) {
                     adapter.getViewByPosition(i).visibility = View.INVISIBLE
                     progressViews[i + 1].start()
@@ -158,13 +168,11 @@ class StoryView : ViewGroup, IStoryView {
                 }
             }
 
-            progressView.doOnStart {
+            progressViews[i].doOnStart {
                 currentPlayed = i
                 adapter.bind(i)
                 adapter.getViewByPosition(i).visibility = View.VISIBLE
             }
-            progressViews.add(progressView)
-            addView(progressView)
         }
     }
 

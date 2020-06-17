@@ -42,12 +42,14 @@ class StoryProgressView : View,
         START_ANIM_VALUE,
         END_ANIM_VALUE
     )
-    private var animDuration: Long = 10000L
+    private var animDuration: Long = 10_000L
 
     // animator callbacks
     private var onStart: ((view: IStoryProgressView) -> Unit)? = null
     private var onCancel: ((view: IStoryProgressView) -> Unit)? = null
     private var onEnd: ((view: IStoryProgressView) -> Unit)? = null
+
+    private var state: State = State.NONE
 
     constructor(context: Context?) : super(context) {
         initialize()
@@ -114,12 +116,19 @@ class StoryProgressView : View,
 
     override fun doOnEnd(action: (view: IStoryProgressView) -> Unit) {
         onEnd = action
-        mainAnimator.doOnEnd { onEnd?.invoke(this) }
+        mainAnimator.doOnEnd {
+            if (state != State.CANCEL) {
+                state = State.END
+                onEnd?.invoke(this)
+            }
+        }
     }
 
     override fun doOnCancel(action: (view: IStoryProgressView) -> Unit) {
         onCancel = action
-        mainAnimator.doOnCancel { onCancel?.invoke(this) }
+        mainAnimator.doOnCancel {
+            onCancel?.invoke(this)
+        }
     }
 
     override fun currentProgress(): Int {
@@ -127,19 +136,29 @@ class StoryProgressView : View,
     }
 
     override fun start() {
+        state = State.PLAY
         mainAnimator.start()
     }
 
     override fun cancel() {
+        state = State.CANCEL
         mainAnimator.cancel()
     }
 
     override fun pause() {
+        state = State.PAUSE
         mainAnimator.pause()
     }
 
     override fun resume() {
+        state = State.PLAY
         mainAnimator.resume()
+    }
+
+    override fun clearProgress() {
+        currentAnimateValue = 0f
+        frontBounds.right = currentAnimateValue * backBounds.right
+        invalidate()
     }
 
     private fun initialize() {
@@ -169,6 +188,10 @@ class StoryProgressView : View,
             ryRound = backBounds.ryRound
         }
 
+    }
+
+    enum class State {
+        PLAY, END, CANCEL, PAUSE, NONE
     }
 
     companion object {

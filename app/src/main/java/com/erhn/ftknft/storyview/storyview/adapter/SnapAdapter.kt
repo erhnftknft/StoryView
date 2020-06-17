@@ -3,7 +3,7 @@ package com.erhn.ftknft.storyview.storyview.adapter
 import android.view.View
 import com.erhn.ftknft.storyview.storyview.models.Snap
 
-open class SnapAdapter {
+class SnapAdapter private constructor() {
 
     private val binders = ArrayList<SnapBinder<out Snap>>()
 
@@ -32,6 +32,25 @@ open class SnapAdapter {
 
     fun addBinder(snapBinder: SnapBinder<out Snap>) {
         binders.add(snapBinder)
+    }
+
+    class Builder {
+        private val binders = ArrayList<SnapBinder<out Snap>>()
+
+        fun addBinder(snapBinder: SnapBinder<out Snap>): Builder {
+            val binder = binders.find { it.javaClass.simpleName == snapBinder.javaClass.simpleName }
+            if (binder == null) {
+                binders.add(snapBinder)
+            }
+            return this
+        }
+
+        fun build(): SnapAdapter {
+            val adapter = SnapAdapter()
+            adapter.binders.clear()
+            adapter.binders.addAll(binders)
+            return adapter
+        }
     }
 
 }

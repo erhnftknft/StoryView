@@ -14,5 +14,7 @@ interface IStoryView {
 
     fun resume()
 
+    fun cancel()
+
     fun onEnd(action: () -> Unit)
 }

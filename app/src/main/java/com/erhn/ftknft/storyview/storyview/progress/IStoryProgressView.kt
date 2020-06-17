@@ -27,5 +27,7 @@ interface IStoryProgressView {
 
     fun resume()
 
+    fun clearProgress()
+
 
 }

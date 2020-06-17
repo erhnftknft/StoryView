@@ -2,26 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
- <!--   <com.erhn.ftknft.storyview.storyview.progress.StoryProgressView
-        android:id="@+id/spv"
+  <!--  <com.erhn.ftknft.storyview.storyview.progress.StoryProgressView
+        android:id="@+id/sv_progress"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginStart="20dp"
-        android:visibility="gone"
-        android:layout_marginEnd="20dp" />-->
-
-    <com.erhn.ftknft.storyview.storyview.StoryView
-        android:id="@+id/sv"
-        app:paddingBetweenProgress="20dp"
-        app:paddingEndProgress="20dp"
-        app:paddingStartProgress="20dp"
-        app:paddingTopProgress="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-
+        android:layout_height="20dp" />-->
 </FrameLayout>
