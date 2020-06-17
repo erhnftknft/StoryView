@@ -3,6 +3,7 @@ package com.erhn.ftknft.storyview.storyview
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
@@ -36,11 +37,18 @@ class StoryView : ViewGroup, IStoryView {
     @ColorInt
     private var frontColor: Int = Color.WHITE
 
+    private var isLongPressed: Boolean = false
+
     private val progressViews = ArrayList<StoryProgressView>()
     private val snapViews = ArrayList<View>()
     private var onEndAction: (() -> Unit)? = null
+    private var onRightSideClick: ((currentPlayed: Int) -> Unit)? = null
+    private var onLeftSideClick: ((currentPlayed: Int) -> Unit)? = null
+    private var onLongPress: ((longPressAction: IStoryView.LongPressAction) -> Unit)? = null
 
-    var adapter: SnapAdapter = SnapAdapter.Builder().build()
+    private var adapter: SnapAdapter = SnapAdapter.Builder().build()
+
+    private lateinit var gestureDetector: GestureDetector
 
     constructor(context: Context) : super(context) {
         initialize(context)
@@ -100,6 +108,14 @@ class StoryView : ViewGroup, IStoryView {
         }
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (isLongPressed && (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL)) {
+            isLongPressed = false
+            onLongPress?.invoke(IStoryView.LongPressAction.UP)
+        }
+        Log.d("TOUCH_EVENT", "${event.action}")
+        return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
+    }
 
     override fun start() {
         for (i in 0 until progressViews.size) {
@@ -129,6 +145,46 @@ class StoryView : ViewGroup, IStoryView {
         }
     }
 
+    override fun setOnLeftSideClick(action: (currentPlayed: Int) -> Unit) {
+        onLeftSideClick = action
+    }
+
+    override fun setOnRightSideClick(action: (currentPlayed: Int) -> Unit) {
+        onRightSideClick = action
+    }
+
+    override fun setOnLongPress(action: (longPressAction: IStoryView.LongPressAction) -> Unit) {
+        onLongPress = action
+    }
+
+    override fun nextSnap() {
+        if (progressViews.size > currentPlayed) {
+            progressViews[currentPlayed].apply {
+                cancel()
+                fillInProgress()
+            }
+
+        }
+        if (currentPlayed < progressViews.lastIndex) {
+            progressViews[currentPlayed + 1].start()
+        } else {
+            onEndAction?.invoke()
+        }
+    }
+
+    override fun prevSnap() {
+        if (progressViews.size > currentPlayed) {
+            progressViews[currentPlayed].cancel()
+            progressViews[currentPlayed].clearProgress()
+        }
+        if (currentPlayed > 0) {
+            progressViews[currentPlayed - 1].start()
+        } else if (currentPlayed == 0) {
+            progressViews[currentPlayed].start()
+        }
+
+    }
+
     override fun onEnd(action: () -> Unit) {
         onEndAction = action
     }
@@ -139,6 +195,7 @@ class StoryView : ViewGroup, IStoryView {
     }
 
     private fun initialize(context: Context) {
+        gestureDetector = GestureDetector(context, StoryViewGestureListener(this))
         removeAllViews()
         progressViews.clear()
         snapViews.clear()
@@ -173,6 +230,28 @@ class StoryView : ViewGroup, IStoryView {
                 adapter.bind(i)
                 adapter.getViewByPosition(i).visibility = View.VISIBLE
             }
+        }
+    }
+
+    inner class StoryViewGestureListener(val storyView: StoryView) :
+        GestureDetector.SimpleOnGestureListener() {
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            if (e.x > this@StoryView.width / 2f) {
+                storyView.onRightSideClick?.invoke(storyView.currentPlayed)
+            } else {
+                storyView.onLeftSideClick?.invoke(storyView.currentPlayed)
+            }
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent?) {
+            storyView.isLongPressed = true
+            storyView.onLongPress?.invoke(IStoryView.LongPressAction.DOWN)
+        }
+
+        override fun onDown(e: MotionEvent?): Boolean {
+            return true
         }
     }
 

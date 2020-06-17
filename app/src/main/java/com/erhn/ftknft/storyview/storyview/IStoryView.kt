@@ -16,5 +16,19 @@ interface IStoryView {
 
     fun cancel()
 
+    fun nextSnap()
+
+    fun prevSnap()
+
+    fun setOnLeftSideClick(action: (currentPlayed: Int) -> Unit)
+
+    fun setOnRightSideClick(action: (currentPlayed: Int) -> Unit)
+
+    fun setOnLongPress(action: (longPressAction: LongPressAction) -> Unit)
+
     fun onEnd(action: () -> Unit)
+
+    enum class LongPressAction {
+        DOWN, UP
+    }
 }

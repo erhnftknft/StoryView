@@ -155,8 +155,17 @@ class StoryProgressView : View,
         mainAnimator.resume()
     }
 
+    override fun end() {
+    }
+
     override fun clearProgress() {
-        currentAnimateValue = 0f
+        currentAnimateValue = START_ANIM_VALUE
+        frontBounds.right = currentAnimateValue * backBounds.right
+        invalidate()
+    }
+
+    override fun fillInProgress() {
+        currentAnimateValue = END_ANIM_VALUE
         frontBounds.right = currentAnimateValue * backBounds.right
         invalidate()
     }
